@@ -12,13 +12,14 @@ from typing import List, Optional
 
 API_KEY = os.environ.get("AIDEVS_API_KEY")
 
-data_path = "https://hub.ag3nts.org/data/{}/people.csv".format(API_KEY)
+DATA_PATH = "https://hub.ag3nts.org/data/{}/people.csv".format(API_KEY)
+URL = "https://hub.ag3nts.org/verify"
 
 current_year = datetime.datetime.now().year
 min_birth_year = current_year - 20
 max_birth_year = current_year - 40
 
-data_table = pd.read_csv(data_path)
+data_table = pd.read_csv(DATA_PATH)
 data_table["birthYear"] = data_table["birthDate"].str[:4].astype(int)
 data_table = data_table[
     (data_table["birthYear"] <= min_birth_year)
@@ -92,17 +93,15 @@ output_dict = {
     "answer": transport_people,
 }
 
-url = "https://hub.ag3nts.org/verify"
-
 try:
-    response = requests.post(url, json=output_dict)
+    response = requests.post(URL, json=output_dict)
 
     if response.status_code == 200:
-        print("Sukces!")
-        print(f"Odpowiedź serwera: {response.json()}")
+        print("Success!")
+        print(f"Server response: {response.json()}")
     else:
-        print(f"Błąd: Kod statusu {response.status_code}")
-        print(f"Szczegóły: {response.text}")
+        print(f"Error: Status code {response.status_code}")
+        print(f"Details: {response.text}")
 
 except requests.exceptions.RequestException as e:
-    print(f"Wystąpił problem z połączeniem: {e}")
+    print(f"An error occurred while connecting: {e}")
