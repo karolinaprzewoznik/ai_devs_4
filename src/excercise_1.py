@@ -1,20 +1,20 @@
-import csv
 import datetime
 import json
 import os
 import pandas as pd
 import requests
-from dateutil.relativedelta import relativedelta
+
 from google import genai
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List
 
-
+# Initialize API key and data paths
 API_KEY = os.environ.get("AIDEVS_API_KEY")
 
 DATA_PATH = "https://hub.ag3nts.org/data/{}/people.csv".format(API_KEY)
 URL = "https://hub.ag3nts.org/verify"
 
+# Load the data and filter it based on the specified criteria
 current_year = datetime.datetime.now().year
 min_birth_year = current_year - 20
 max_birth_year = current_year - 40
@@ -31,6 +31,7 @@ data_table = data_table[
 data_table = data_table.drop(columns=["birthYear"])
 data_table = data_table.to_json(orient="records", force_ascii=False)
 
+# Define structured output prompt and schema
 prompt = f"""
 Please extract the following information from the data:
 1. First Name (name)
@@ -70,6 +71,7 @@ class Answer(BaseModel):
     )
 
 
+# Initialize the AI client and generate content based on the prompt
 client = genai.Client()
 
 response = client.models.generate_content(
@@ -87,12 +89,14 @@ transport_people = [
     person.model_dump() for person in people_json.people if "transport" in person.tags
 ]
 
+# Format output to provide expected shape
 output_dict = {
     "apikey": API_KEY,
     "task": "people",
     "answer": transport_people,
 }
 
+# Send the output to the server
 try:
     response = requests.post(URL, json=output_dict)
 
@@ -105,3 +109,7 @@ try:
 
 except requests.exceptions.RequestException as e:
     print(f"An error occurred while connecting: {e}")
+
+# Save the output to a JSON file
+with open("./docs/excercise_1_output.json", "w", encoding="utf-8") as file:
+    json.dump(transport_people, file, ensure_ascii=False, indent=2)
