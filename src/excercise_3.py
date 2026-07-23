@@ -42,7 +42,7 @@ def check_package(packageid: str):
         return response.json()
 
 
-def redirect_package(packageid: str, destination: str, code: str):
+def redirect_package(packageid: str, code: str):
     """
     Redirect a package to a destination.
 
@@ -50,8 +50,6 @@ def redirect_package(packageid: str, destination: str, code: str):
     ----------
     packageid : str
         The ID of the package to redirect.
-    destination : str
-        The target destination for the package.
     code : str
         The security code for the redirect operation.
 
