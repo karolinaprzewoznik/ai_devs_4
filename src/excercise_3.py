@@ -9,6 +9,8 @@ from google import genai
 from google.genai import types
 
 API_KEY = os.environ.get("AIDEVS_API_KEY")
+HUB_VERIFY_URL = "https://hub.ag3nts.org/verify"
+HUB_PACKAGES_URL = "https://hub.ag3nts.org/api/packages"
 PUBLIC_URL = "https://willed-cement-cavalry.ngrok-free.dev"
 # ngrok http 3000
 
@@ -36,7 +38,7 @@ def check_package(packageid: str):
 
     with httpx.Client() as client:
         response = client.post(
-            "https://hub.ag3nts.org/api/packages",
+            HUB_PACKAGES_URL,
             json={"apikey": API_KEY, "action": "check", "packageid": packageid},
         )
         return response.json()
@@ -62,7 +64,7 @@ def redirect_package(packageid: str, code: str):
     actual_destination = "PWR6132PL"
     with httpx.Client() as client:
         response = client.post(
-            "https://hub.ag3nts.org/api/packages",
+            HUB_PACKAGES_URL,
             json={
                 "apikey": API_KEY,
                 "action": "redirect",
@@ -165,7 +167,7 @@ def send_message_to_hub(session_id, message_text):
 
     try:
         hub_response = requests.post(
-            "https://hub.ag3nts.org/verify",
+            HUB_VERIFY_URL,
             json={
                 "apikey": API_KEY,
                 "task": "proxy",
@@ -251,7 +253,7 @@ if __name__ == "__main__":
 
     try:
         resp = requests.post(
-            "https://hub.ag3nts.org/verify",
+            HUB_VERIFY_URL,
             json={
                 "apikey": API_KEY,
                 "task": "proxy",
